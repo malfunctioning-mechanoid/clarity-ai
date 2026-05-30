@@ -20,6 +20,9 @@ export default function DashboardPage() {
   const [activeShortcut, setActiveShortcut] = useState(null); // 'exam', 'mock', 'summary'
   const [model, setModel] = useState("gemini-flash");
   
+  // Custom Dropdown Popover State
+  const [isMarksDropdownOpen, setIsMarksDropdownOpen] = useState(false);
+
   // Dynamic template input fields
   const [topic, setTopic] = useState("");
   const [marks, setMarks] = useState("5");
@@ -70,9 +73,9 @@ export default function DashboardPage() {
       e.preventDefault(); // Halt standard backspace to prevent jumping spaces
       
       const shortcutRollback = {
-        exam: "/exa",
-        mock: "/moc",
-        summary: "/summar"
+        exam: "/exam",
+        mock: "/mock",
+        summary: "/summary"
       };
 
       setInputValue(shortcutRollback[activeShortcut] || "");
@@ -176,21 +179,48 @@ export default function DashboardPage() {
                   <>
                     <input 
                       type="text" 
-                      placeholder="Topic (e.g., Electric Current)" 
+                      placeholder="Topic (e.g., Chemical Reactions)" 
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
-                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-44"
+                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-44 text-xs"
                     />
-                    <select 
-                      value={marks} 
-                      onChange={(e) => setMarks(e.target.value)}
-                      className="bg-white border border-[#EDEDEB] rounded px-1.5 py-1 outline-none focus:border-neutral-400 cursor-pointer"
-                    >
-                      <option value="1">1 Mark</option>
-                      <option value="2">2 Marks</option>
-                      <option value="3">3 Marks</option>
-                      <option value="5">5 Marks</option>
-                    </select>
+                    
+                    {/* Premium Styled Popover Custom Dropdown Menu */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setIsMarksDropdownOpen(!isMarksDropdownOpen)}
+                        className="flex items-center justify-between gap-1.5 bg-white border border-[#EDEDEB] rounded px-2 py-1 text-xs font-medium text-neutral-600 hover:border-neutral-400 transition-colors min-w-[76px]"
+                      >
+                        <span>{marks} {marks === "1" ? "Mark" : "Marks"}</span>
+                        <ChevronDown className="h-3 w-3 text-neutral-400" />
+                      </button>
+                      
+                      {isMarksDropdownOpen && (
+                        <>
+                          {/* Clicking this transparent layer closes the menu immediately */}
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setIsMarksDropdownOpen(false)} 
+                          />
+                          <div className="absolute left-0 mt-1 w-24 bg-white border border-[#EDEDEB] rounded-lg shadow-md py-1 z-20 animate-fade-in">
+                            {["1", "2", "3", "5"].map((option) => (
+                              <button
+                                key={option}
+                                type="button"
+                                onClick={() => {
+                                  setMarks(option);
+                                  setIsMarksDropdownOpen(false);
+                                }}
+                                className="flex w-full items-center px-2.5 py-1.5 text-xs text-neutral-600 hover:bg-[#F1F1EF] hover:text-black transition-colors"
+                              >
+                                {option} {option === "1" ? "Mark" : "Marks"}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </>
                 )}
 
@@ -201,14 +231,14 @@ export default function DashboardPage() {
                       placeholder="Time (mins)" 
                       value={timeLimit}
                       onChange={(e) => setTimeLimit(e.target.value)}
-                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-24"
+                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-24 text-xs"
                     />
                     <input 
                       type="number" 
                       placeholder="Q Count" 
                       value={questions}
                       onChange={(e) => setQuestions(e.target.value)}
-                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-24"
+                      className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-24 text-xs"
                     />
                   </>
                 )}
@@ -219,7 +249,7 @@ export default function DashboardPage() {
                     placeholder="Chapter Title" 
                     value={chapter}
                     onChange={(e) => setChapter(e.target.value)}
-                    className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-56"
+                    className="bg-white border border-[#EDEDEB] rounded px-2 py-1 outline-none focus:border-neutral-400 w-56 text-xs"
                   />
                 )}
 
